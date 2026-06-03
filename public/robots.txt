@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://walnut.evofarm.top/sitemap.xml
