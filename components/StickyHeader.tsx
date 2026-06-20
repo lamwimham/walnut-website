@@ -15,6 +15,8 @@ const NAV_ITEMS = [
   { key: "pricing", href: "#pricing" },
 ];
 
+const LLM_RESOURCE_LINK = { key: "llms", href: "/llms.txt" } as const;
+
 export default function StickyHeader() {
   const { t } = useI18n();
   const shouldReduceMotion = useReducedMotion();
@@ -84,6 +86,15 @@ export default function StickyHeader() {
 
           {/* Right: Language + Mobile Toggle */}
           <div className="flex items-center gap-3">
+            <a
+              href={LLM_RESOURCE_LINK.href}
+              className="group inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-[rgba(12,12,18,0.8)] px-2.5 py-1.5 text-xs tracking-[0.16em] text-text-secondary backdrop-blur-sm transition-colors duration-300 hover:border-neural-soft/45 hover:text-neural-soft"
+              aria-label={t(`nav.${LLM_RESOURCE_LINK.key}`)}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-signal/80 shadow-[0_0_12px_rgba(79,209,197,0.55)] transition-transform duration-300 group-hover:scale-125" />
+              <span>LLMs</span>
+              <span className="hidden sm:inline">.txt</span>
+            </a>
             <LanguageSwitcher />
             {/* Mobile hamburger */}
             <button

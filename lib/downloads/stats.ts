@@ -13,10 +13,16 @@ export interface DownloadCountryStats {
   regions: DownloadRegionStats[];
 }
 
+export interface DownloadUnattributedStats {
+  downloads: number;
+  bytes: number;
+}
+
 export interface DownloadStats {
   generatedAt?: string;
   totalDownloads: number;
   totalBytes: number;
+  unattributed?: DownloadUnattributedStats;
   countries: DownloadCountryStats[];
 }
 
@@ -112,6 +118,16 @@ function normalizeCountry(value: unknown): DownloadCountryStats | null {
   };
 }
 
+function normalizeUnattributed(value: unknown): DownloadUnattributedStats | null {
+  if (!isRecord(value)) return null;
+
+  const downloads = readNumber(value, ["downloads", "download_count", "count"]);
+  const bytes = readNumber(value, ["bytes", "total_bytes"]);
+  if (downloads <= 0 && bytes <= 0) return null;
+
+  return { downloads, bytes };
+}
+
 export function normalizeDownloadStats(value: unknown): DownloadStats | null {
   if (!isRecord(value)) return null;
 
@@ -130,14 +146,27 @@ export function normalizeDownloadStats(value: unknown): DownloadStats | null {
     (total, country) => total + country.bytes,
     0
   );
+  const totalDownloads =
+    readNumber(value, ["totalDownloads", "total_downloads"]) ||
+    summedDownloads;
+  const totalBytes =
+    readNumber(value, ["totalBytes", "total_bytes"]) || summedBytes;
+  const explicitUnattributed = normalizeUnattributed(value.unattributed);
+  const inferredUnattributed =
+    !explicitUnattributed &&
+    (totalDownloads > summedDownloads || totalBytes > summedBytes)
+      ? {
+          downloads: Math.max(0, totalDownloads - summedDownloads),
+          bytes: Math.max(0, totalBytes - summedBytes),
+        }
+      : null;
+  const unattributed = explicitUnattributed ?? inferredUnattributed ?? undefined;
 
   return {
     generatedAt: readString(value, ["generatedAt", "generated_at"]),
-    totalDownloads:
-      readNumber(value, ["totalDownloads", "total_downloads"]) ||
-      summedDownloads,
-    totalBytes:
-      readNumber(value, ["totalBytes", "total_bytes"]) || summedBytes,
+    totalDownloads,
+    totalBytes,
+    unattributed,
     countries,
   };
 }

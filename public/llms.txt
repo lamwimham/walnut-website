@@ -1,0 +1,42 @@
+# Walnut
+
+> Walnut is a local-first llm-wiki for building the memory layer of a future personal Agent.
+
+Walnut helps people turn saved links, notes, and fragments into an indexed second brain. Its core idea is simple: memory goes to AI, the index stays with the user. Walnut is not positioned as a generic knowledge base; it is designed to accumulate the user's taste, review history, links, and editorial traces as a unique personality dataset for a future personal Agent.
+
+Walnut is an Agent product by EvoFarm.
+
+## Product Context
+
+- Local-first: user data is intended to stay local by default, with self-managed sync options such as iCloud, OneDrive, or Git.
+- Bring your own AI key: current plans focus on software access and user-managed model keys.
+- Hosted AI: not available yet; a no-setup hosted AI plan is planned for later.
+- Pricing: the basic app is free; advanced software features can be subscription or lifetime access.
+- Availability: Walnut does not currently offer online services, paid subscriptions, or hosted AI capabilities in mainland China.
+
+## Key Pages
+
+- [Homepage](https://walnut.evofarm.top/): Product positioning, roadmap, pricing, and downloads.
+- [Philosophy](https://walnut.evofarm.top/#philosophy): Six-layer framework from pain points to soul data.
+- [Problem](https://walnut.evofarm.top/#problem): Why Walnut shifts knowledge management from storage to indexing.
+- [Features](https://walnut.evofarm.top/#features): Roadmap from passive radar to active injection and knowledge graph.
+- [Demo](https://walnut.evofarm.top/#demo): Product demo area.
+- [Soul Data](https://walnut.evofarm.top/#taste): How Walnut describes taste, review behavior, links, edits, and question patterns.
+- [Pricing](https://walnut.evofarm.top/#pricing): Free, Pro Own AI, and Pro Lifetime plans.
+
+## Downloads
+
+- [Latest release](https://github.com/lamwimham/walnut-releases/releases/latest): Fallback release page for installers.
+- [Download manifest](https://dl.walnut.evofarm.top/downloads/latest/downloads.json): Machine-readable installer manifest used by the website.
+- [Download statistics](https://dl.walnut.evofarm.top/downloads/latest/stats.json): Public download telemetry used by the website.
+
+## Site Metadata
+
+- [Sitemap](https://walnut.evofarm.top/sitemap.xml): XML sitemap.
+- [Robots](https://walnut.evofarm.top/robots.txt): Crawler policy.
+- [llms.txt](https://walnut.evofarm.top/llms.txt): AI-readable site summary.
+
+## Support
+
+- [Feedback email](mailto:lianwimham@gmail.com): Product issues and suggestions.
+- [EvoFarm](https://www.evofarm.top): Parent brand.

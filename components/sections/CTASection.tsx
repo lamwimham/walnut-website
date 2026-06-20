@@ -67,6 +67,10 @@ export default function CTASection() {
             downloadLabel={t("cta.downloadLabel")}
             mirrorManifestUrl={WALNUT_DOWNLOAD_MANIFEST_URL}
             downloadStatsUrl={WALNUT_DOWNLOAD_STATS_URL}
+            feedbackEmail="lianwimham@gmail.com"
+            feedbackLabel={t("cta.feedback.label")}
+            feedbackSubject={t("cta.feedback.subject")}
+            resourceLinks={[{ href: "/llms.txt", label: t("cta.footer.llms") }]}
             badges={[
               t("cta.footer.local"),
               t("cta.footer.open"),

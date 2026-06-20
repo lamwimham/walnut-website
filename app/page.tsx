@@ -1,5 +1,6 @@
 import NeuralBackground from "@/components/effects/NeuralBackground";
 import StickyHeader from "@/components/StickyHeader";
+import RegionAvailabilityNotice from "@/components/RegionAvailabilityNotice";
 import HeroSection from "@/components/sections/HeroSection";
 import PhilosophyPyramid from "@/components/sections/PhilosophyPyramid";
 import ProblemSection from "@/components/sections/ProblemSection";
@@ -26,6 +27,7 @@ export default function Home() {
 
       {/* Global navigation */}
       <StickyHeader />
+      <RegionAvailabilityNotice />
 
       {/* Content */}
       <div className="relative z-10">

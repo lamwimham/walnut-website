@@ -186,6 +186,40 @@ section[id] {
   box-shadow: 0 0 40px rgba(124, 104, 245, 0.08);
 }
 
+.pricing-card-lifetime {
+  border: 1px solid rgba(213, 180, 106, 0.2);
+  box-shadow: 0 0 36px rgba(213, 180, 106, 0.06);
+}
+
+.pricing-rail {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(200, 192, 255, 0.1);
+  background:
+    linear-gradient(120deg, rgba(79, 209, 197, 0.055), transparent 36%),
+    radial-gradient(circle at 92% 0%, rgba(124, 104, 245, 0.11), transparent 18rem),
+    rgba(255, 255, 255, 0.018);
+  backdrop-filter: blur(18px);
+}
+
+.pricing-rail::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(200, 192, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 192, 255, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(90deg, black, transparent 85%);
+  opacity: 0.28;
+}
+
+.pricing-rail > * {
+  position: relative;
+  z-index: 1;
+}
+
 .landing-section {
   position: relative;
   padding: 8rem 1.5rem;
@@ -281,6 +315,21 @@ section[id] {
 .secondary-cta:hover {
   border-color: rgba(213, 180, 106, 0.36);
   color: var(--text-primary);
+}
+
+.lifetime-cta {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgba(213, 180, 106, 0.34);
+  background: linear-gradient(135deg, rgba(213, 180, 106, 0.18), rgba(213, 180, 106, 0.055));
+  color: var(--text-primary);
+  box-shadow: 0 18px 48px rgba(213, 180, 106, 0.1);
+}
+
+.lifetime-cta:hover {
+  border-color: rgba(213, 180, 106, 0.54);
+  transform: translateY(-1px);
 }
 
 .hairline-divider {

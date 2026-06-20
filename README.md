@@ -22,6 +22,10 @@ The landing page is a static export, so it does not write analytics itself. The
 footer reads a public JSON file from the download mirror/CDN and renders the
 global download total plus the top five countries.
 
+The mirror operations module lives in `ops/download-mirror/`. It installs the
+Nginx mirror endpoint, writes structured access logs, generates the public
+`stats.json`, and verifies the public download manifests.
+
 Configure the stats endpoint with:
 
 ```bash
@@ -33,22 +37,45 @@ Expected JSON shape:
 ```json
 {
   "generated_at": "2026-06-02T12:00:00Z",
-  "total_downloads": 12840,
+  "total_downloads": 8042,
+  "total_requests": 12840,
+  "partial_requests": 3900,
   "total_bytes": 92837498240,
+  "unattributed": {
+    "downloads": 12,
+    "requests": 24,
+    "partial_requests": 6,
+    "bytes": 120348010
+  },
   "countries": [
     {
       "country_code": "US",
       "country_name": "United States",
-      "downloads": 4200,
+      "downloads": 3100,
+      "requests": 4200,
+      "partial_requests": 900,
       "bytes": 30493202000,
       "regions": [
         {
           "region_code": "CA",
           "region_name": "California",
-          "downloads": 830,
+          "downloads": 620,
+          "requests": 830,
+          "partial_requests": 180,
           "bytes": 6023000000
         }
       ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "Walnut_0.6.54_aarch64.dmg",
+      "path": "/downloads/versions/0.6.54/Walnut_0.6.54_aarch64.dmg",
+      "downloads": 510,
+      "requests": 680,
+      "partial_requests": 170,
+      "bytes": 115623144822,
+      "size": 170034037
     }
   ]
 }
@@ -56,6 +83,21 @@ Expected JSON shape:
 
 The parser also accepts camelCase keys such as `generatedAt`,
 `totalDownloads`, `countryCode`, and `countryName`.
+
+Useful mirror commands:
+
+```bash
+# Generate public stats from local or remote Nginx logs.
+python3 ops/download-mirror/generate-download-stats.py \
+  --log /var/log/nginx/walnut-downloads-access.log.1 \
+  --log /var/log/nginx/walnut-downloads-access.log \
+  --output /var/www/walnut/downloads/stats/stats.json \
+  --state /var/lib/walnut-download-stats/state.json \
+  --asset-root /var/www/walnut/downloads
+
+# Verify the deployed mirror manifests and public stats endpoint.
+DOMAIN=dl.walnut.evofarm.top ops/download-mirror/verify-download-mirror.sh
+```
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

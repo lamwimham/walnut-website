@@ -33,6 +33,8 @@
 .swc/
 .eslintcache
 *.tsbuildinfo
+__pycache__/
+*.py[cod]
 next-env.d.ts
 
 # Logs

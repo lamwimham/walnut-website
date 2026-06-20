@@ -142,6 +142,7 @@ export default function DownloadStatsPanel({
     ...topCountries.map((country) => country.downloads)
   );
   const totalDownloads = stats?.totalDownloads ?? 0;
+  const unattributedDownloads = stats?.unattributed?.downloads ?? 0;
   const generatedAt =
     stats?.generatedAt && !Number.isNaN(new Date(stats.generatedAt).getTime())
       ? new Intl.DateTimeFormat(locale, {
@@ -204,6 +205,15 @@ export default function DownloadStatsPanel({
               <span className="rounded-full border border-border-subtle bg-white/[0.025] px-3 py-1">
                 {t("downloads.stats.totalBytes", {
                   bytes: formatBytes(stats.totalBytes, locale),
+                })}
+              </span>
+            ) : null}
+            {unattributedDownloads > 0 ? (
+              <span className="rounded-full border border-border-subtle bg-white/[0.025] px-3 py-1">
+                {t("downloads.stats.unattributed", {
+                  downloads: new Intl.NumberFormat(locale).format(
+                    unattributedDownloads
+                  ),
                 })}
               </span>
             ) : null}
