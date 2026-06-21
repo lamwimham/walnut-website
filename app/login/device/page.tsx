@@ -3,6 +3,7 @@ import AccountShell from "@/components/account/AccountShell";
 import GoogleLoginPanel from "@/components/account/GoogleLoginPanel";
 import { currentWebsiteSession } from "@/lib/account/session";
 import { safeReturnUrl } from "@/lib/account/return-url-policy";
+import { openDeviceLoginSession } from "@/lib/account/billing-client";
 import { authorizeDeviceLoginAction } from "./actions";
 
 function first(value: string | string[] | undefined): string | undefined {
@@ -22,6 +23,24 @@ export default async function DeviceLoginPage({ searchParams }: { searchParams: 
   const returnUrl = safeReturnUrl(first(params.returnUrl), "walnut://access/oauth/google/success");
   const session = await currentWebsiteSession();
   const returnTo = `/login/device?session=${encodeURIComponent(sessionId)}&token=${encodeURIComponent(browserToken)}&provider=${encodeURIComponent(provider)}&returnUrl=${encodeURIComponent(returnUrl)}`;
+  const deviceSession = sessionId && browserToken ? await openDeviceLoginSession({ sessionId, browserToken }) : null;
+
+  if (deviceSession && !deviceSession.ok) {
+    return (
+      <AccountShell>
+        <section className="account-card mx-auto max-w-2xl p-6 sm:p-8">
+          <span className="account-kicker">Device authorization</span>
+          <h1 className="account-title mt-5">This device login request cannot be opened.</h1>
+          <p className="mt-5 text-sm leading-7 text-text-secondary">
+            Billing rejected this browser token or the session has expired. Please start Google sign-in again from the Walnut desktop app.
+          </p>
+          <p className="mt-4 rounded-2xl border border-border-subtle bg-white/[0.03] px-4 py-3 text-xs text-text-muted">
+            Reason: {deviceSession.reason ?? "unknown"}
+          </p>
+        </section>
+      </AccountShell>
+    );
+  }
 
   if (!session) {
     return (
@@ -47,9 +66,9 @@ export default async function DeviceLoginPage({ searchParams }: { searchParams: 
           <input type="hidden" name="provider" value={provider} />
           <input type="hidden" name="returnUrl" value={returnUrl} />
           <p className="text-xs uppercase tracking-[0.22em] text-signal">Waiting desktop session</p>
-          <h2 className="mt-4 break-all font-display text-2xl">{sessionId || "Missing session"}</h2>
+          <h2 className="mt-4 break-all font-display text-2xl">{deviceSession?.session?.id || sessionId || "Missing session"}</h2>
           <p className="mt-4 text-sm leading-7 text-text-muted">
-            Signed in as {session.email ?? session.userId}. Browser token stays on the website side; desktop receives only the final billing snapshot after consume.
+            Signed in as {session.email ?? session.userId}. Status: {deviceSession?.session?.status ?? "opened"}. Browser token stays on the website side; desktop receives only the final billing snapshot after consume.
           </p>
           <button className="primary-cta mt-7 w-full rounded-2xl px-5 py-4 text-sm font-semibold tracking-[0.14em]" type="submit" disabled={!sessionId || !browserToken}>
             Authorize Walnut

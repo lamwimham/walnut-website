@@ -1,6 +1,6 @@
 # Issue: Walnut Website Account Portal - Google 登录注册与客户端授权入口
 
-状态：Draft / P0 Planned  
+状态：In Progress / P0 Account portal bridge implemented locally
 适用仓库：`walnut-website`  
 创建日期：2026-06-21  
 关联项目：`walnut-billing` / `ISSUE_ACCESS_DEVICE_LOGIN_BRIDGE.md`
@@ -370,3 +370,22 @@ AUTH_SESSION_SECRET=...
 AUTH_COOKIE_DOMAIN=.walnut.xxx
 AUTH_RETURN_URL_ALLOWLIST=walnut://access/oauth/google/success
 ```
+
+
+## 12. Implementation Checkpoint - 2026-06-21
+
+已落地：
+
+- [x] Serverful Next + Auth.js Google 登录基础。
+- [x] `/login`、`/account`、`/account/billing`、`/login/device`、`/auth/success|error` 页面。
+- [x] website -> billing `external-login` 已接入，用 billing user id 作为 web session 的最小身份事实。
+- [x] website -> billing account summary 已接入，账号页不再只使用本地 placeholder。
+- [x] `/login/device` 打开时调用 billing internal open endpoint，授权时调用 authorize endpoint。
+- [x] 登录/账号页面 noindex，landing page 仍保持 SEO 可索引。
+
+待继续：
+
+- [ ] 配置真实 `WALNUT_BILLING_INTERNAL_TOKEN` / `WEBSITE_INTERNAL_AUTH_TOKEN` 对齐。
+- [ ] Google Cloud Console 添加 website callback：`https://www.walnut.xxx/api/auth/callback/google` 和本地 `http://127.0.0.1:3000/api/auth/callback/google`。
+- [ ] Walnut Desktop 接入 billing create/poll/consume 后做端到端验收。
+- [ ] 账号中心补齐 checkout/cancel/resume UI-safe read model 与操作入口。
