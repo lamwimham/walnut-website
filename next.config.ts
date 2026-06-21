@@ -1,11 +1,15 @@
 import type { NextConfig } from "next";
 
+const staticExport = process.env.WALNUT_STATIC_EXPORT === "true";
+
 const nextConfig: NextConfig = {
-  output: "export",
-  distDir: "dist",
-  images: {
-    unoptimized: true,
-  },
+  ...(staticExport
+    ? {
+        output: "export" as const,
+        distDir: "dist",
+        images: { unoptimized: true },
+      }
+    : {}),
   turbopack: {
     root: process.cwd(),
   },

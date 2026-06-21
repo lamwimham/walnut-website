@@ -397,3 +397,135 @@ section[id] {
     transition-duration: 0.001ms !important;
   }
 }
+
+
+/* Account portal */
+.account-shell {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(213, 180, 106, 0.1), transparent 18rem),
+    radial-gradient(circle at 82% 12%, rgba(79, 209, 197, 0.08), transparent 20rem),
+    radial-gradient(circle at 52% 92%, rgba(124, 104, 245, 0.14), transparent 26rem),
+    var(--bg-deep);
+}
+
+.account-aurora {
+  position: fixed;
+  inset: -20% -12% auto auto;
+  width: min(52rem, 88vw);
+  height: min(52rem, 88vw);
+  pointer-events: none;
+  border-radius: 999px;
+  background:
+    conic-gradient(from 120deg, rgba(213, 180, 106, 0.16), rgba(79, 209, 197, 0.12), rgba(124, 104, 245, 0.2), rgba(213, 180, 106, 0.16));
+  filter: blur(72px);
+  opacity: 0.34;
+  animation: accountDrift 18s ease-in-out infinite alternate;
+}
+
+@keyframes accountDrift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  to { transform: translate3d(-7%, 6%, 0) rotate(24deg) scale(1.08); }
+}
+
+.account-nav-link {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.5rem 0.7rem;
+  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+}
+
+.account-nav-link:hover {
+  border-color: rgba(200, 192, 255, 0.18);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--neural-soft);
+}
+
+.account-kicker {
+  color: var(--signal);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.account-title {
+  max-width: 13ch;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6.9rem);
+  font-weight: 680;
+  letter-spacing: -0.065em;
+  line-height: 0.92;
+  text-wrap: balance;
+}
+
+.account-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(200, 192, 255, 0.13);
+  border-radius: 2rem;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.012)),
+    radial-gradient(circle at 18% 0%, rgba(213, 180, 106, 0.08), transparent 14rem),
+    rgba(12, 13, 22, 0.78);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(20px);
+}
+
+.account-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(200, 192, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 192, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(120deg, black, transparent 72%);
+  opacity: 0.34;
+}
+
+.account-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.account-orb {
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  place-items: center;
+  border: 1px solid rgba(213, 180, 106, 0.36);
+  border-radius: 999px;
+  background: radial-gradient(circle at 32% 22%, rgba(255, 255, 255, 0.32), transparent 34%), rgba(213, 180, 106, 0.13);
+  color: var(--soul);
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  box-shadow: 0 0 46px rgba(213, 180, 106, 0.11);
+}
+
+.account-step-card,
+.account-metric {
+  border: 1px solid rgba(200, 192, 255, 0.1);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.026);
+  padding: 1rem;
+}
+
+.account-step-card span,
+.account-metric span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.account-step-card strong,
+.account-metric strong {
+  margin-top: 0.5rem;
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}

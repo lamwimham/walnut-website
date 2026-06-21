@@ -1,7 +1,15 @@
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { access, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const distDir = join(process.cwd(), "dist");
+
+try {
+  await access(distDir);
+} catch {
+  console.log("No static export dist directory found; skipping cache busting.");
+  process.exit(0);
+}
+
 const assetVersion = (
   process.env.NEXT_PUBLIC_BUILD_VERSION ??
   process.env.BUILD_VERSION ??
@@ -35,10 +43,7 @@ let changedFiles = 0;
 
 for (const file of files) {
   const original = await readFile(file, "utf8");
-  const updated = original.replace(
-    chunkReferencePattern,
-    `$1?v=${assetVersion}`
-  );
+  const updated = original.replace(chunkReferencePattern, `$1?v=${assetVersion}`);
 
   if (updated !== original) {
     await writeFile(file, updated);
@@ -46,6 +51,4 @@ for (const file of files) {
   }
 }
 
-console.log(
-  `Cache-busted ${changedFiles} static export files with asset version ${assetVersion}`
-);
+console.log(`Cache-busted ${changedFiles} static export files with asset version ${assetVersion}`);

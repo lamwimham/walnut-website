@@ -257,6 +257,7 @@ const zh = {
     taste: "灵魂",
     pricing: "定价",
     llms: "LLMs.txt",
+    account: "账号",
     cta: "行动",
   },
   lang: {
@@ -543,6 +544,7 @@ const en = {
     taste: "Soul",
     pricing: "Pricing",
     llms: "LLMs.txt",
+    account: "Account",
     cta: "Action",
   },
   lang: {

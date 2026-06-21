@@ -16,6 +16,7 @@ const NAV_ITEMS = [
 ];
 
 const LLM_RESOURCE_LINK = { key: "llms", href: "/llms.txt" } as const;
+const ACCOUNT_LINK = { key: "account", href: "/login" } as const;
 
 export default function StickyHeader() {
   const { t } = useI18n();
@@ -86,6 +87,13 @@ export default function StickyHeader() {
 
           {/* Right: Language + Mobile Toggle */}
           <div className="flex items-center gap-3">
+            <a
+              href={ACCOUNT_LINK.href}
+              className="hidden rounded-full border border-soul/25 bg-soul/10 px-3 py-1.5 text-xs tracking-[0.16em] text-soul transition-colors duration-300 hover:border-soul/45 hover:text-text-primary sm:inline-flex"
+              aria-label={t(`nav.${ACCOUNT_LINK.key}`)}
+            >
+              {t(`nav.${ACCOUNT_LINK.key}`)}
+            </a>
             <a
               href={LLM_RESOURCE_LINK.href}
               className="group inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-[rgba(12,12,18,0.8)] px-2.5 py-1.5 text-xs tracking-[0.16em] text-text-secondary backdrop-blur-sm transition-colors duration-300 hover:border-neural-soft/45 hover:text-neural-soft"
@@ -159,6 +167,15 @@ export default function StickyHeader() {
                     {t(`nav.${item.key}`)}
                   </motion.button>
                 ))}
+                <motion.a
+                  href={ACCOUNT_LINK.href}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: NAV_ITEMS.length * 0.05 }}
+                  className="mt-2 rounded-lg border border-soul/25 bg-soul/10 px-4 py-3 text-sm text-soul transition-colors duration-200 hover:text-text-primary"
+                >
+                  {t(`nav.${ACCOUNT_LINK.key}`)}
+                </motion.a>
 
               </div>
             </motion.nav>
