@@ -7,6 +7,7 @@ export type AccountRuntimeConfig = {
   hasSessionSecret: boolean;
   cookieDomain: string;
   returnUrlAllowlist: string[];
+  googleOneTapAllowedOrigins: string[];
 };
 
 const DEFAULT_RETURN_URLS = ["walnut://access/oauth/google/success"];
@@ -22,17 +23,29 @@ function normalizedEnvUrl(value: string | undefined): string {
   }
 }
 
-function splitAllowlist(value: string | undefined): string[] {
-  const entries = value
+function splitCsv(value: string | undefined): string[] {
+  return value
     ?.split(",")
     .map((entry) => entry.trim())
+    .filter(Boolean) ?? [];
+}
+
+function splitAllowlist(value: string | undefined): string[] {
+  const entries = splitCsv(value);
+  return entries.length ? entries : DEFAULT_RETURN_URLS;
+}
+
+function googleOneTapOrigins(value: string | undefined, websitePublicUrl: string): string[] {
+  const explicitOrigins = splitCsv(value)
+    .map(normalizedEnvUrl)
     .filter(Boolean);
-  return entries?.length ? entries : DEFAULT_RETURN_URLS;
+  return explicitOrigins.length ? explicitOrigins : [websitePublicUrl].filter(Boolean);
 }
 
 export function accountRuntimeConfig(): AccountRuntimeConfig {
+  const websitePublicUrl = normalizedEnvUrl(process.env.WALNUT_WEBSITE_PUBLIC_URL);
   return {
-    websitePublicUrl: normalizedEnvUrl(process.env.WALNUT_WEBSITE_PUBLIC_URL),
+    websitePublicUrl,
     billingInternalBaseUrl: normalizedEnvUrl(process.env.WALNUT_BILLING_INTERNAL_BASE_URL),
     hasBillingInternalToken: Boolean(process.env.WALNUT_BILLING_INTERNAL_TOKEN?.trim()),
     hasGoogleOAuthClient: Boolean(process.env.GOOGLE_OAUTH_CLIENT_ID?.trim()),
@@ -40,6 +53,7 @@ export function accountRuntimeConfig(): AccountRuntimeConfig {
     hasSessionSecret: Boolean(process.env.AUTH_SESSION_SECRET?.trim()),
     cookieDomain: process.env.AUTH_COOKIE_DOMAIN?.trim() ?? "",
     returnUrlAllowlist: splitAllowlist(process.env.AUTH_RETURN_URL_ALLOWLIST),
+    googleOneTapAllowedOrigins: googleOneTapOrigins(process.env.GOOGLE_ONE_TAP_ALLOWED_ORIGINS, websitePublicUrl),
   };
 }
 

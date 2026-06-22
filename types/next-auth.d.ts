@@ -4,6 +4,14 @@ import "next-auth";
 import "next-auth/jwt";
 
 declare module "next-auth" {
+  interface User {
+    id: string;
+    planCode?: string;
+    subscriptionStatus?: string;
+    deviceCount?: number;
+    maxDevices?: number;
+  }
+
   interface Session {
     user?: DefaultSession["user"] & {
       id: string;

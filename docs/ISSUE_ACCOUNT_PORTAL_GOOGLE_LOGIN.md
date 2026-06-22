@@ -389,3 +389,87 @@ AUTH_RETURN_URL_ALLOWLIST=walnut://access/oauth/google/success
 - [ ] Google Cloud Console 添加 website callback：`https://www.walnut.xxx/api/auth/callback/google` 和本地 `http://127.0.0.1:3000/api/auth/callback/google`。
 - [ ] Walnut Desktop 接入 billing create/poll/consume 后做端到端验收。
 - [ ] 账号中心补齐 checkout/cancel/resume UI-safe read model 与操作入口。
+
+## 11. Google One Tap 登录体验增强
+
+状态：Implemented locally / pending browser verification
+日期：2026-06-21
+
+### 11.1 目标
+
+在不改变现有身份事实源的前提下，为账号相关未登录页面增加 Google One Tap 自动提示登录体验：
+
+```text
+Google Identity Services One Tap
+  -> website Auth.js credentials provider
+    -> website verifies Google ID token server-side
+      -> website calls walnut-billing external-login
+        -> Auth.js writes httpOnly website session
+```
+
+### 11.2 架构边界
+
+| 模块 | 负责 | 不负责 |
+|---|---|---|
+| Google GIS One Tap | 提供低摩擦浏览器登录提示，返回 Google ID token credential | 管理 Walnut 用户、订阅、设备授权 |
+| `walnut-website` Auth.js | 校验 ID token、建立 website session、调用 billing 身份同步 | 保存 Google provider token 到桌面端 |
+| `walnut-billing` | 外部身份绑定、用户事实、订阅与设备授权事实 | 渲染 One Tap UI |
+
+### 11.3 实现点
+
+- 新增 `components/account/GoogleOneTap.tsx`：客户端加载 Google GIS SDK，在未登录态触发 One Tap prompt。
+- 新增 `lib/account/google-one-tap.ts`：服务端使用 Google 官方 `google-auth-library` 校验 ID token audience、签名与 payload。
+- 更新 `auth.ts`：新增 `google-one-tap` credentials provider，与手动 Google OAuth 共享同一套 billing external-login 与 session claims 写入逻辑。
+- 更新 `components/account/GoogleLoginPanel.tsx`：One Tap 不可用时保留手动 `Continue with Google` 兜底。
+
+### 11.4 Google Cloud Console 依赖
+
+除 OAuth redirect URI 外，One Tap 还要求 OAuth Client 配置 Authorized JavaScript origins：
+
+```text
+http://localhost:3000
+http://127.0.0.1:3000
+https://<production-website-domain>
+```
+
+生产验收前必须确认生产域名已经加入 Authorized JavaScript origins，否则 One Tap prompt 不会正常展示。
+
+### 11.5 验收标准
+
+- [ ] 未登录访问 `/login` 或 `/account` 时，浏览器可显示 Google One Tap prompt。
+- [ ] 点击 One Tap 账号后，website 通过 Auth.js `google-one-tap` provider 建立 session。
+- [ ] `/account` 显示 billing 返回的用户、套餐、设备摘要。
+- [ ] One Tap 被关闭、跳过或浏览器不支持时，手动 `Continue with Google` 仍可完成登录。
+- [ ] `/login/device` 未登录态 One Tap 登录后仍能回到原 device authorization URL。
+
+## 12. Account Portal Visual Direction
+
+状态：Implemented locally / no-card account UI
+日期：2026-06-21
+
+账号中心采用现代线性设置页，而不是 dashboard/card grid：
+
+- 禁止在账号主路径使用卡片栅格、玻璃卡片堆叠、大圆角面板、发光阴影作为主要信息结构。
+- `/account`、`/account/billing`、`/login`、`/login/device` 使用 typography、分割线、状态文本、细进度条和文本链接构建层级。
+- 主视觉关键词是 `quiet control room`：克制、可信、现代、低噪音。
+- 色彩仅用于状态和行动提示：`signal` 表示 connected/active，`soul` 表示 warning，`neural-soft` 表示 neutral。
+- 保留手动 Google 登录兜底，但按钮视觉应为现代线框/文本型，不使用厚重 CTA 卡片。
+
+## 13. Landing Page Editorial De-cardification
+
+状态：Phase 1 implemented locally
+日期：2026-06-21
+
+Landing page 不采用账号中心的绝对 no-card 规则，但禁止把卡片网格作为默认表达方式。阶段 1 将营销叙事区从 SaaS card grid 调整为 editorial product narrative：
+
+- `PhilosophyPyramid`：由六张玻璃卡改为编号 editorial rows。
+- `ProblemSection`：由三张 comparison cards 和两张 role cards 改为左右对照行与 editorial duo。
+- `FeatureRadar`：由三张 phase cards 改为 phase roadmap rows + inline feature list。
+- `TasteProfile`：由 chart card + soul-data cards 改为数据线条与 editorial rows。
+- `PricingSection`：保留 pricing 对比结构，但弱化为 line-based plan blocks，不再使用厚重 surface-card tone。
+
+后续允许保留的容器类型：
+
+- 产品视频/截图等 media frame。
+- pricing/table 等需要可比较边界的信息结构。
+- 下载状态或运营指标，但应进一步演进为 inline stats，而不是卡片堆叠。

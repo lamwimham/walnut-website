@@ -1,6 +1,19 @@
 import NextAuth from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import Google from "next-auth/providers/google";
-import { externalLoginWithGoogle } from "@/lib/account/billing-client";
+import Credentials from "next-auth/providers/credentials";
+import { externalLoginWithGoogle, type AccountSummary, type GoogleIdentityPrincipal } from "@/lib/account/billing-client";
+import { verifyGoogleOneTapCredential } from "@/lib/account/google-one-tap";
+
+type AccountSessionUser = {
+  id: string;
+  name?: string;
+  email?: string;
+  planCode?: string;
+  subscriptionStatus?: string;
+  deviceCount?: number;
+  maxDevices?: number;
+};
 
 type GoogleProfile = {
   sub?: string;
@@ -9,6 +22,32 @@ type GoogleProfile = {
   name?: string;
   picture?: string;
 };
+
+function accountUserFromSummary(summary: AccountSummary): AccountSessionUser {
+  return {
+    id: summary.user.id,
+    name: summary.user.displayName,
+    email: summary.user.email,
+    planCode: summary.account.planCode,
+    subscriptionStatus: summary.account.subscriptionStatus,
+    deviceCount: summary.account.deviceCount,
+    maxDevices: summary.account.maxDevices,
+  };
+}
+
+async function accountUserFromGooglePrincipal(principal: GoogleIdentityPrincipal): Promise<AccountSessionUser> {
+  return accountUserFromSummary(await externalLoginWithGoogle(principal));
+}
+
+function applyAccountUserClaims(token: JWT, user: AccountSessionUser) {
+  token.billingUserId = user.id;
+  token.name = user.name ?? token.name;
+  token.email = user.email ?? token.email;
+  token.planCode = user.planCode;
+  token.subscriptionStatus = user.subscriptionStatus;
+  token.deviceCount = user.deviceCount;
+  token.maxDevices = user.maxDevices;
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
@@ -26,9 +65,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
       },
     }),
+    Credentials({
+      id: "google-one-tap",
+      name: "Google One Tap",
+      credentials: {
+        credential: { label: "Google credential", type: "text" },
+      },
+      async authorize(credentials) {
+        const credential = typeof credentials?.credential === "string" ? credentials.credential : "";
+        const principal = await verifyGoogleOneTapCredential(credential);
+        return accountUserFromGooglePrincipal(principal);
+      },
+    }),
   ],
   callbacks: {
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account, profile, user }) {
       if (account?.provider === "google" && profile) {
         const googleProfile = profile as GoogleProfile;
         if (!googleProfile.sub || !googleProfile.email) {
@@ -39,22 +90,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error("google_email_unverified");
         }
 
-        const summary = await externalLoginWithGoogle({
+        applyAccountUserClaims(token, await accountUserFromGooglePrincipal({
           provider: "google",
           subject: googleProfile.sub,
           email: googleProfile.email,
           emailVerified,
           displayName: googleProfile.name,
           avatarUrl: googleProfile.picture,
-        });
+        }));
+      }
 
-        token.billingUserId = summary.user.id;
-        token.name = summary.user.displayName ?? token.name;
-        token.email = summary.user.email ?? token.email;
-        token.planCode = summary.account.planCode;
-        token.subscriptionStatus = summary.account.subscriptionStatus;
-        token.deviceCount = summary.account.deviceCount;
-        token.maxDevices = summary.account.maxDevices;
+      if (account?.provider === "google-one-tap" && user) {
+        applyAccountUserClaims(token, user as AccountSessionUser);
       }
       return token;
     },

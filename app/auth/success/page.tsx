@@ -21,7 +21,7 @@ export default async function AuthSuccessPage({ searchParams }: { searchParams: 
         <p className="mt-6 text-base leading-8 text-text-secondary">
           The browser step is complete. If this was a desktop login, Walnut will finish by polling billing and consuming the authorized device session.
         </p>
-        <Link href={returnTo} className="primary-cta mt-8 inline-flex rounded-2xl px-6 py-4 text-sm font-semibold tracking-[0.14em]">
+        <Link href={returnTo} className="account-primary-link mt-8 inline-flex">
           Return to Walnut
         </Link>
       </section>

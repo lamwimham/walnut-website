@@ -19,7 +19,7 @@ export default async function AuthErrorPage({ searchParams }: { searchParams: Pr
         <p className="mt-6 text-base leading-8 text-text-secondary">
           Reason: <span className="text-soul">{reason || "unknown"}</span>. No provider token or authorization code is shown on this page.
         </p>
-        <Link href="/login" className="secondary-cta mt-8 inline-flex rounded-2xl px-6 py-4 text-sm font-semibold">
+        <Link href="/login" className="account-secondary-link mt-8 inline-flex">
           Try again
         </Link>
       </section>

@@ -1,26 +1,30 @@
-import { googleOAuthReady } from "@/lib/account/config";
+import GoogleOneTap from "./GoogleOneTap";
+import { accountRuntimeConfig, googleOAuthReady } from "@/lib/account/config";
 import { safeReturnUrl } from "@/lib/account/return-url-policy";
 import { signInWithGoogle } from "@/lib/account/auth-actions";
 
 export default function GoogleLoginPanel({ returnTo, deviceSession }: { returnTo?: string; deviceSession?: string }) {
-  const ready = googleOAuthReady();
+  const config = accountRuntimeConfig();
+  const ready = googleOAuthReady(config);
+  const googleClientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() ?? "";
   const fallback = deviceSession ? `/login/device?session=${encodeURIComponent(deviceSession)}` : "/account";
   const safeReturn = safeReturnUrl(returnTo, fallback);
+
   return (
-    <section className="grid w-full gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-      <div className="max-w-2xl">
+    <section className="account-login w-full">
+      <div className="account-login-intro">
         <span className="account-kicker">Account Portal</span>
-        <h1 className="account-title mt-5">Sign in to sync Walnut access across devices.</h1>
+        <h1 className="account-title account-login-title mt-5">Sign in to sync Walnut access.</h1>
         <p className="mt-6 max-w-xl text-base leading-8 text-text-secondary">
-          Your browser account proves who you are. Billing decides what this device can use, then Walnut stores a signed access snapshot locally.
+          Website verifies your browser identity. Billing decides the subscription and device authorization. Walnut desktop receives only a signed access snapshot.
         </p>
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+        <div className="account-login-flow" aria-label="Login flow">
           {[
             ["01", "Google identity"],
             ["02", "Billing authorization"],
             ["03", "Local snapshot"],
           ].map(([step, label]) => (
-            <div key={step} className="account-step-card">
+            <div key={step} className="account-login-step">
               <span>{step}</span>
               <strong>{label}</strong>
             </div>
@@ -28,36 +32,22 @@ export default function GoogleLoginPanel({ returnTo, deviceSession }: { returnTo
         </div>
       </div>
 
-      <div className="account-card p-6 sm:p-8">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-signal">Secure web login</p>
-            <h2 className="mt-3 font-display text-3xl text-text-primary">Continue with Google</h2>
-          </div>
-          <div className="account-orb">G</div>
-        </div>
-        <p className="mt-5 text-sm leading-7 text-text-muted">
-          Google tokens stay in the website server flow. The desktop app only receives Walnut&apos;s signed authorization after billing approves the device session.
-        </p>
+      <div className="account-login-action">
+        <GoogleOneTap clientId={googleClientId} returnTo={safeReturn} enabled={ready} allowedOrigins={config.googleOneTapAllowedOrigins} />
+        <p className="account-section-label">Secure web login</p>
+        <h2>Continue with Google</h2>
+        <p>One Tap may appear automatically. If it does not, use the button below to start the same secure server-side OAuth flow.</p>
         <form action={signInWithGoogle} className="mt-7">
           <input type="hidden" name="returnTo" value={safeReturn} />
           {deviceSession ? <input type="hidden" name="deviceSession" value={deviceSession} /> : null}
-          <button
-            className="primary-cta flex w-full items-center justify-center rounded-2xl px-5 py-4 text-sm font-semibold tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-55"
-            type="submit"
-            disabled={!ready}
-          >
+          <button className="account-google-button" type="submit" disabled={!ready}>
             Continue with Google
           </button>
         </form>
         {!ready && (
-          <p className="mt-4 rounded-2xl border border-soul/20 bg-soul/5 px-4 py-3 text-xs leading-6 text-soul">
-            Preview mode: Google OAuth environment variables are not configured yet.
-          </p>
+          <p className="account-one-tap-note">Preview mode: Google OAuth environment variables are not configured yet.</p>
         )}
-        <div className="mt-6 border-t border-border-subtle pt-5 text-xs leading-6 text-text-muted">
-          No provider token is stored in the desktop client. No billing state is decided in the browser UI.
-        </div>
+        <p className="account-login-footnote">Google provider tokens stay on the website server path and are not stored in Walnut desktop.</p>
       </div>
     </section>
   );
