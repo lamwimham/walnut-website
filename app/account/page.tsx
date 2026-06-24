@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import AccountShell from "@/components/account/AccountShell";
 import AccountOverview from "@/components/account/AccountOverview";
-import GoogleLoginPanel from "@/components/account/GoogleLoginPanel";
-import { accountSummaryForUser } from "@/lib/account/billing-client";
+import { safeAccountSummaryForUser } from "@/lib/account/billing-client";
 import { currentWebsiteSession } from "@/lib/account/session";
 
 export const metadata: Metadata = {
@@ -13,17 +13,17 @@ export const metadata: Metadata = {
 export default async function AccountPage() {
   const session = await currentWebsiteSession();
   if (!session) {
-    return (
-      <AccountShell>
-        <GoogleLoginPanel returnTo="/account" />
-      </AccountShell>
-    );
+    redirect("/login?returnTo=%2Faccount");
   }
 
-  const summary = await accountSummaryForUser(session.userId);
+  const { reason, status, summary } = await safeAccountSummaryForUser({
+    id: session.userId,
+    email: session.email,
+    displayName: session.displayName,
+  });
   return (
-    <AccountShell>
-      <AccountOverview summary={summary} />
+    <AccountShell session={session}>
+      <AccountOverview summary={summary} summaryReason={reason} summaryStatus={status} />
     </AccountShell>
   );
 }

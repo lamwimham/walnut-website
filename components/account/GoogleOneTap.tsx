@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { signIn } from "next-auth/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 
 type GoogleCredentialResponse = {
   credential?: string;
@@ -49,6 +50,7 @@ export default function GoogleOneTap({
   enabled: boolean;
   allowedOrigins: string[];
 }) {
+  const { t } = useI18n();
   const [scriptReady, setScriptReady] = useState(false);
   const [promptUnavailable, setPromptUnavailable] = useState(false);
   const initializedRef = useRef(false);
@@ -111,7 +113,7 @@ export default function GoogleOneTap({
     <>
       <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onLoad={() => setScriptReady(true)} />
       {promptUnavailable ? (
-        <p className="account-one-tap-note">Google One Tap is not available in this browser session. Use the button below to continue.</p>
+        <p className="account-one-tap-note">{t("accountPortal.login.oneTapUnavailable")}</p>
       ) : null}
     </>
   );

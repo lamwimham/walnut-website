@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { MouseEvent } from "react";
 import ScrollReveal from "../effects/ScrollReveal";
+import { checkoutStartPath, type CheckoutPlanKey } from "@/lib/account/checkout-plans";
 import { useI18n } from "@/lib/i18n/context";
 
 type PricingPlanKey = "free" | "proByok" | "lifetime";
@@ -13,6 +14,7 @@ interface PricingPlanConfig {
   featureCount: number;
   tagCount: number;
   tone: PricingTone;
+  checkoutPlan?: CheckoutPlanKey;
 }
 
 const selectionGuides = [
@@ -33,12 +35,14 @@ const pricingPlans: PricingPlanConfig[] = [
     featureCount: 6,
     tagCount: 3,
     tone: "featured",
+    checkoutPlan: "proByok",
   },
   {
     key: "lifetime",
     featureCount: 6,
     tagCount: 3,
     tone: "lifetime",
+    checkoutPlan: "lifetime",
   },
 ];
 
@@ -110,6 +114,7 @@ export default function PricingSection() {
         <div className="grid gap-6 lg:grid-cols-3 items-stretch">
           {pricingPlans.map((plan, i) => {
             const isFeatured = plan.tone === "featured";
+            const ctaHref = plan.checkoutPlan ? checkoutStartPath(plan.checkoutPlan) : "#cta";
 
             return (
               <ScrollReveal key={plan.key} delay={0.15 + i * 0.08} className="h-full">
@@ -174,8 +179,8 @@ export default function PricingSection() {
                   </ul>
 
                   <motion.a
-                    href="#cta"
-                    onClick={(event) => scrollToCTA(event, shouldReduceMotion ? "auto" : "smooth")}
+                    href={ctaHref}
+                    onClick={plan.checkoutPlan ? undefined : (event) => scrollToCTA(event, shouldReduceMotion ? "auto" : "smooth")}
                     className={`block w-full rounded-xl py-3 text-center text-sm font-medium transition-all duration-300 ${ctaClasses[plan.tone]}`}
                     whileTap={{ scale: 0.98 }}
                   >

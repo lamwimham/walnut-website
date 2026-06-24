@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { I18nProvider } from "@/lib/i18n/context";
 import { siteMetadata, structuredDataJson } from "@/lib/seo/site";
 import "./globals.css";
+import "./account.css";
 
 export const metadata: Metadata = siteMetadata;
 

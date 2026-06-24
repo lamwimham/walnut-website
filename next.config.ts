@@ -9,7 +9,9 @@ const nextConfig: NextConfig = {
         distDir: "dist",
         images: { unoptimized: true },
       }
-    : {}),
+    : {
+        output: "standalone" as const,
+      }),
   turbopack: {
     root: process.cwd(),
   },

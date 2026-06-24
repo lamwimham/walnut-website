@@ -8,6 +8,7 @@ export type AccountRuntimeConfig = {
   cookieDomain: string;
   returnUrlAllowlist: string[];
   googleOneTapAllowedOrigins: string[];
+  checkoutProvider: string;
 };
 
 const DEFAULT_RETURN_URLS = ["walnut://access/oauth/google/success"];
@@ -54,6 +55,7 @@ export function accountRuntimeConfig(): AccountRuntimeConfig {
     cookieDomain: process.env.AUTH_COOKIE_DOMAIN?.trim() ?? "",
     returnUrlAllowlist: splitAllowlist(process.env.AUTH_RETURN_URL_ALLOWLIST),
     googleOneTapAllowedOrigins: googleOneTapOrigins(process.env.GOOGLE_ONE_TAP_ALLOWED_ORIGINS, websitePublicUrl),
+    checkoutProvider: process.env.WALNUT_CHECKOUT_PROVIDER?.trim() || "creem",
   };
 }
 

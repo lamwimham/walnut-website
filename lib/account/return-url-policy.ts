@@ -23,3 +23,10 @@ export function safeReturnUrl(value: string | null | undefined, fallback = "/acc
   const raw = value?.trim() ?? "";
   return isAllowedReturnUrl(raw) ? raw : fallback;
 }
+
+const LOGIN_PAGE_PATTERN = /^\/login(?:[?#]|$)/;
+
+export function postAuthReturnUrl(value: string | null | undefined, fallback = "/account"): string {
+  const returnUrl = safeReturnUrl(value, fallback);
+  return LOGIN_PAGE_PATTERN.test(returnUrl) ? fallback : returnUrl;
+}

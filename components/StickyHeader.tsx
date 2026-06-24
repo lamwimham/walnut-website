@@ -9,6 +9,7 @@ import { useI18n } from "@/lib/i18n/context";
 const NAV_ITEMS = [
   { key: "philosophy", href: "#philosophy" },
   { key: "problem", href: "#problem" },
+  { key: "knowledge", href: "#knowledge-management" },
   { key: "features", href: "#features" },
   { key: "demo", href: "#demo" },
   { key: "taste", href: "#taste" },
@@ -16,13 +17,14 @@ const NAV_ITEMS = [
 ];
 
 const LLM_RESOURCE_LINK = { key: "llms", href: "/llms.txt" } as const;
-const ACCOUNT_LINK = { key: "account", href: "/login" } as const;
+const ACCOUNT_LINK = { key: "account" } as const;
 
 export default function StickyHeader() {
   const { t } = useI18n();
   const shouldReduceMotion = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const accountHref = "/login";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -88,7 +90,7 @@ export default function StickyHeader() {
           {/* Right: Language + Mobile Toggle */}
           <div className="flex items-center gap-3">
             <a
-              href={ACCOUNT_LINK.href}
+              href={accountHref}
               className="hidden rounded-full border border-soul/25 bg-soul/10 px-3 py-1.5 text-xs tracking-[0.16em] text-soul transition-colors duration-300 hover:border-soul/45 hover:text-text-primary sm:inline-flex"
               aria-label={t(`nav.${ACCOUNT_LINK.key}`)}
             >
@@ -109,7 +111,7 @@ export default function StickyHeader() {
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
               className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5"
-              aria-label="Toggle menu"
+              aria-label={t("nav.toggleMenu")}
               aria-controls="mobile-navigation"
               aria-expanded={mobileOpen}
             >
@@ -168,7 +170,7 @@ export default function StickyHeader() {
                   </motion.button>
                 ))}
                 <motion.a
-                  href={ACCOUNT_LINK.href}
+                  href={accountHref}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: NAV_ITEMS.length * 0.05 }}

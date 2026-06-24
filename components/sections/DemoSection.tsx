@@ -5,13 +5,18 @@ import ScrollReveal from "../effects/ScrollReveal";
 import { useI18n } from "@/lib/i18n/context";
 import { useState, useRef, useEffect } from "react";
 
+const DEMO_VIDEO_URL = process.env.NEXT_PUBLIC_WALNUT_DEMO_VIDEO_URL?.trim();
+
 export default function DemoSection() {
   const { t } = useI18n();
   const shouldReduceMotion = useReducedMotion();
   const [videoError, setVideoError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const showVideo = Boolean(DEMO_VIDEO_URL) && !videoError;
 
   useEffect(() => {
+    if (!DEMO_VIDEO_URL) return;
+
     const video = videoRef.current;
     if (!video) return;
 
@@ -81,22 +86,22 @@ export default function DemoSection() {
               {/* Content area */}
               <div className="relative bg-bg-deep">
                 {/* Video layer */}
-                <video
-                  ref={videoRef}
-                  className={`w-full aspect-[16/10] object-cover ${
-                    videoError ? "hidden" : "block"
-                  }`}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                >
-                  <source src="/demo.mp4" type="video/mp4" />
-                </video>
+                {showVideo && (
+                  <video
+                    ref={videoRef}
+                    className="block w-full aspect-[16/10] object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                  >
+                    <source src={DEMO_VIDEO_URL} type="video/mp4" />
+                  </video>
+                )}
 
                 {/* Fallback mockup UI */}
-                {videoError && (
+                {!showVideo && (
                   <div className="w-full aspect-[16/10] p-6 md:p-8">
                     <div className="w-full h-full grid grid-cols-12 gap-3 md:gap-4">
                       {/* Sidebar */}

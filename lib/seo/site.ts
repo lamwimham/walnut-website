@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
+import { absoluteUrl, seoRoutes, siteConfig } from "./routes";
 
-const siteOrigin = "https://walnut.evofarm.top";
+const siteOrigin = siteConfig.origin;
 const siteUrl = `${siteOrigin}/`;
-const brandName = "Walnut";
-const parentBrandName = "EvoFarm";
-const parentBrandUrl = "https://www.evofarm.top";
-const title = "Walnut — The Foundation of Your Future Personal Agent";
-const description =
-  "Walnut is your llm-wiki. Memory to AI, index to yourself. Taste cannot be copied. Soul accumulates over time. Walnut is not a knowledge base — it is the unique personality training dataset for your future personal Agent.";
-
-const absoluteUrl = (path: `/${string}`) => `${siteOrigin}${path}`;
+const brandName = siteConfig.brandName;
+const parentBrandName = siteConfig.parentBrandName;
+const parentBrandUrl = siteConfig.parentBrandUrl;
+const homeRoute = seoRoutes.home;
+const title = homeRoute.title;
+const description = homeRoute.description;
 
 const logo = {
   url: absoluteUrl("/logo.png"),
@@ -34,16 +33,7 @@ export const siteMetadata: Metadata = {
   metadataBase: new URL(siteOrigin),
   title,
   description,
-  keywords: [
-    brandName,
-    "llm-wiki",
-    "second brain",
-    "personal Agent",
-    "knowledge management",
-    "AI",
-    "indexing",
-    "soul data",
-  ],
+  keywords: homeRoute.keywords,
   authors: [{ name: brandName, url: siteUrl }],
   creator: brandName,
   publisher: parentBrandName,
@@ -76,6 +66,9 @@ export const siteMetadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+  },
+  verification: {
+    google: "AGK_pCZdQSND2VreHgwV5wi8O9JgyfJU4AOXGyAOFNI",
   },
   alternates: {
     canonical: siteUrl,
@@ -110,7 +103,7 @@ export const structuredData = {
       "@type": "WebSite",
       "@id": websiteId,
       name: `${brandName} LLM Wiki`,
-      alternateName: [brandName, "Walnut llm-wiki"],
+      alternateName: [brandName, "Walnut llm-wiki", "Walnut LLM Wiki"],
       url: siteUrl,
       description,
       publisher: { "@id": organizationId },

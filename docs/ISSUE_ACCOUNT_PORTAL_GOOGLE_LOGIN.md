@@ -369,6 +369,7 @@ GOOGLE_OAUTH_ISSUER_URL=https://accounts.google.com
 AUTH_SESSION_SECRET=...
 AUTH_COOKIE_DOMAIN=.walnut.xxx
 AUTH_RETURN_URL_ALLOWLIST=walnut://access/oauth/google/success
+WALNUT_CHECKOUT_PROVIDER=creem
 ```
 
 

@@ -23,6 +23,7 @@ Internet
 NODE_ENV=production
 PORT=3000
 WALNUT_WEBSITE_PUBLIC_URL=https://www.walnut.xxx
+NEXT_PUBLIC_WALNUT_WEBSITE_PUBLIC_URL=https://www.walnut.xxx
 WALNUT_BILLING_INTERNAL_BASE_URL=https://billing.walnut.xxx
 WALNUT_BILLING_INTERNAL_TOKEN=...
 GOOGLE_OAUTH_CLIENT_ID=...
@@ -31,12 +32,20 @@ AUTH_SECRET=...
 AUTH_SESSION_SECRET=...
 AUTH_TRUST_HOST=true
 AUTH_RETURN_URL_ALLOWLIST=walnut://access/oauth/google/success
+WALNUT_CHECKOUT_PROVIDER=creem
+NEXT_PUBLIC_WALNUT_DEMO_VIDEO_URL=
 ```
 
 Notes:
 
 - `AUTH_SECRET` is used by Auth.js. Keep it stable across deploys.
 - `AUTH_SESSION_SECRET` is retained as Walnut's own config guard and can match `AUTH_SECRET` initially.
+- `WALNUT_WEBSITE_PUBLIC_URL` drives server-side absolute URLs for canonical,
+  sitemap, robots, billing redirects, and structured data. Keep it identical to
+  the canonical production host.
+- `NEXT_PUBLIC_WALNUT_DEMO_VIDEO_URL` is optional. Leave it empty until a real
+  demo video is deployed; the landing page will render a static product mockup
+  instead of referencing a missing `/demo.mp4`.
 - Never expose billing internal token to the browser or `NEXT_PUBLIC_*` variables.
 
 ## Build and run
@@ -56,6 +65,12 @@ WALNUT_STATIC_EXPORT=true npm run build
 ## Nginx example
 
 ```nginx
+server {
+  listen 80;
+  server_name www.walnut.xxx;
+  return 301 https://$host$request_uri;
+}
+
 server {
   listen 443 ssl http2;
   server_name www.walnut.xxx;
@@ -82,20 +97,29 @@ server {
 
 ## SEO checks
 
+- `/` is a marketing route and must not call account/session APIs. It should be
+  cacheable and should not return `Cache-Control: private` or `no-store`.
 - `/` remains indexable and keeps structured data from `lib/seo/site.ts`.
 - `/login`, `/login/device`, `/account`, `/account/billing`, `/auth/*`, and `/api/auth/*` must be noindex or non-HTML API routes.
-- `robots.txt`, `sitemap.xml`, `llms.txt`, favicons, and OG image remain served from `public/`.
+- `robots.txt` and `sitemap.xml` are generated from `app/robots.ts`,
+  `app/sitemap.ts`, and `lib/seo/routes.ts` so canonical URLs, lastmod, and
+  sitemap entries share one route registry.
+- `llms.txt`, favicons, and OG image remain served from `public/`.
 
 ## Smoke test
 
 ```bash
 curl -I https://www.walnut.xxx/
+curl -I http://www.walnut.xxx/
 curl -I https://www.walnut.xxx/login
 curl -I https://www.walnut.xxx/api/auth/signin
+curl -sS https://www.walnut.xxx/sitemap.xml
 ```
 
 Expected:
 
-- `/` returns 200 and indexable metadata.
+- `/` returns 200, indexable metadata, and a public/cacheable response.
+- `http://` redirects to the canonical `https://` URL with 301.
 - `/login` returns 200 with `robots: noindex` metadata.
 - `/api/auth/signin` is served by Auth.js and does not expose secrets.
+- `/sitemap.xml` lists only canonical indexable marketing URLs.

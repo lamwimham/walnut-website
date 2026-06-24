@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import AccountShell from "@/components/account/AccountShell";
+import { AuthErrorPanel } from "@/components/account/AuthStatusPanels";
+import { currentWebsiteSession } from "@/lib/account/session";
 
 export const metadata: Metadata = {
   title: "Walnut Sign-in Error",
@@ -10,19 +11,11 @@ export const metadata: Metadata = {
 export default async function AuthErrorPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const reason = Array.isArray(params.reason) ? params.reason[0] : params.reason;
+  const session = await currentWebsiteSession();
 
   return (
-    <AccountShell>
-      <section className="mx-auto max-w-2xl text-center">
-        <span className="account-kicker">Authorization paused</span>
-        <h1 className="account-title mt-5">Walnut could not finish sign-in.</h1>
-        <p className="mt-6 text-base leading-8 text-text-secondary">
-          Reason: <span className="text-soul">{reason || "unknown"}</span>. No provider token or authorization code is shown on this page.
-        </p>
-        <Link href="/login" className="account-secondary-link mt-8 inline-flex">
-          Try again
-        </Link>
-      </section>
+    <AccountShell session={session}>
+      <AuthErrorPanel reason={reason} />
     </AccountShell>
   );
 }
