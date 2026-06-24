@@ -20,8 +20,36 @@ type GeoResponse = {
   country_name?: string;
 };
 
+type NoticeClassKey = "root" | "surface" | "inner" | "badge" | "dot" | "message";
+
+export type RegionAvailabilityNoticeClasses = Partial<Record<NoticeClassKey, string>>;
+
 const GEOIP_ENDPOINT =
   process.env.NEXT_PUBLIC_GEOIP_ENDPOINT ?? "/__walnut/geoip";
+
+const defaultClasses: Record<NoticeClassKey, string> = {
+  root: "relative z-20 pt-16",
+  surface:
+    "border-y border-soul/20 bg-[linear-gradient(90deg,rgba(213,180,106,0.13),rgba(17,18,28,0.92)_34%,rgba(79,209,197,0.055))] px-4 py-3 shadow-[0_12px_44px_rgba(0,0,0,0.16)] backdrop-blur-xl sm:px-6",
+  inner: "mx-auto flex max-w-6xl flex-col gap-2 sm:flex-row sm:items-start sm:gap-3",
+  badge:
+    "inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-soul/30 bg-soul/10 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.2em] text-soul",
+  dot: "h-1.5 w-1.5 rounded-full bg-soul shadow-[0_0_14px_rgba(213,180,106,0.6)]",
+  message: "text-sm leading-relaxed text-text-secondary",
+};
+
+function resolveNoticeClasses(
+  classes: RegionAvailabilityNoticeClasses | undefined
+): Record<NoticeClassKey, string> {
+  return {
+    root: classes?.root ?? defaultClasses.root,
+    surface: classes?.surface ?? defaultClasses.surface,
+    inner: classes?.inner ?? defaultClasses.inner,
+    badge: classes?.badge ?? defaultClasses.badge,
+    dot: classes?.dot ?? defaultClasses.dot,
+    message: classes?.message ?? defaultClasses.message,
+  };
+}
 
 function normalizeCountryCode(value: string | null | undefined): string {
   return value?.trim().toUpperCase() ?? "";
@@ -60,10 +88,15 @@ function readInjectedCountryCode(): string {
   );
 }
 
-export default function RegionAvailabilityNotice() {
+export default function RegionAvailabilityNotice({
+  classes,
+}: {
+  classes?: RegionAvailabilityNoticeClasses;
+}) {
   const { t } = useI18n();
   const shouldReduceMotion = useReducedMotion();
   const [showNotice, setShowNotice] = useState(false);
+  const noticeClasses = resolveNoticeClasses(classes);
 
   useEffect(() => {
     let cancelled = false;
@@ -108,15 +141,15 @@ export default function RegionAvailabilityNotice() {
       initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: shouldReduceMotion ? 0 : 0.35, ease: [0.25, 0.4, 0.25, 1] }}
-      className="relative z-20 pt-16"
+      className={noticeClasses.root}
     >
-      <div className="border-y border-soul/20 bg-[linear-gradient(90deg,rgba(213,180,106,0.13),rgba(17,18,28,0.92)_34%,rgba(79,209,197,0.055))] px-4 py-3 shadow-[0_12px_44px_rgba(0,0,0,0.16)] backdrop-blur-xl sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
-          <span className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-soul/30 bg-soul/10 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.2em] text-soul">
-            <span className="h-1.5 w-1.5 rounded-full bg-soul shadow-[0_0_14px_rgba(213,180,106,0.6)]" />
+      <div className={noticeClasses.surface}>
+        <div className={noticeClasses.inner}>
+          <span className={noticeClasses.badge}>
+            <span className={noticeClasses.dot} />
             {t("regionNotice.label")}
           </span>
-          <p className="text-sm leading-relaxed text-text-secondary">
+          <p className={noticeClasses.message}>
             {t("regionNotice.message")}
           </p>
         </div>

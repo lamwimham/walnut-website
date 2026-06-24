@@ -63,9 +63,9 @@
 }
 
 .header {
-  position: absolute;
+  position: fixed;
   z-index: 50;
-  top: 0;
+  top: 14px;
   left: 50%;
   display: grid;
   width: min(1180px, calc(100% - 40px));
@@ -73,11 +73,14 @@
   align-items: center;
   gap: 24px;
   transform: translateX(-50%);
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  padding: 22px 0;
-  backdrop-filter: none;
+  border: 1px solid rgba(200, 197, 186, 0.68);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 248, 0.86), rgba(239, 238, 232, 0.72)),
+    rgba(255, 253, 248, 0.78);
+  box-shadow: 0 18px 55px rgba(36, 37, 45, 0.08);
+  padding: 10px 12px 10px 16px;
+  backdrop-filter: blur(22px) saturate(1.1);
 }
 
 .brand,
@@ -172,6 +175,82 @@
 .localeButtonActive {
   background: var(--brand-selected);
   color: var(--brand);
+}
+
+.availabilityNotice {
+  position: fixed;
+  z-index: 60;
+  top: 80px;
+  left: 50%;
+  width: min(1180px, calc(100% - 40px));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.availabilitySurface {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(183, 134, 70, 0.34);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(240, 217, 185, 0.72)),
+    var(--paper);
+  box-shadow: 0 24px 70px rgba(154, 100, 58, 0.15);
+  padding: 12px 16px;
+  pointer-events: auto;
+  backdrop-filter: blur(24px) saturate(1.08);
+}
+
+.availabilitySurface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(124, 104, 245, 0.08), transparent 28%),
+    radial-gradient(circle at 96% 0%, rgba(99, 126, 109, 0.18), transparent 16rem);
+  pointer-events: none;
+}
+
+.availabilityInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 auto;
+}
+
+.availabilityBadge {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(154, 100, 58, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.78);
+  color: var(--warm-ink);
+  font-size: 0.62rem;
+  font-weight: 820;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  padding: 8px 10px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.availabilityDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--warm-ink);
+  box-shadow: 0 0 0 4px rgba(154, 100, 58, 0.11);
+}
+
+.availabilityMessage {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.62;
 }
 
 .heroSection,
@@ -1001,11 +1080,11 @@
   }
 
   .header {
-    top: 0;
+    top: 10px;
     width: calc(100% - 28px);
     grid-template-columns: 1fr auto;
-    border-radius: 0;
-    padding: 18px 0;
+    border-radius: 24px;
+    padding: 10px 12px;
   }
 
   .brand {
@@ -1015,6 +1094,26 @@
   .quietLink,
   .accountLink {
     display: none;
+  }
+
+  .availabilityNotice {
+    top: 74px;
+    width: calc(100% - 28px);
+  }
+
+  .availabilitySurface {
+    border-radius: 18px;
+    padding: 11px 12px;
+  }
+
+  .availabilityInner {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .availabilityMessage {
+    font-size: 0.74rem;
+    line-height: 1.55;
   }
 
   .heroSection,

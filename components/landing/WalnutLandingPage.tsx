@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import DownloadButtons from "@/components/DownloadButtons";
+import RegionAvailabilityNotice from "@/components/RegionAvailabilityNotice";
 import { WALNUT_DOWNLOAD_MANIFEST_URL } from "@/lib/downloads/config";
 import { useI18n } from "@/lib/i18n/context";
 import { LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n/config";
@@ -409,6 +410,16 @@ function FinalSection() {
 export default function WalnutLandingPage() {
   return (
     <main className={styles.landing}>
+      <RegionAvailabilityNotice
+        classes={{
+          root: styles.availabilityNotice,
+          surface: styles.availabilitySurface,
+          inner: styles.availabilityInner,
+          badge: styles.availabilityBadge,
+          dot: styles.availabilityDot,
+          message: styles.availabilityMessage,
+        }}
+      />
       <Header />
       <HeroSection />
       <ThesisSection />
