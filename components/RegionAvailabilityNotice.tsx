@@ -135,15 +135,17 @@ export default function RegionAvailabilityNotice({
   if (!showNotice) return null;
 
   return (
-    <motion.aside
+    <aside
       role="status"
       aria-live="polite"
-      initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: shouldReduceMotion ? 0 : 0.35, ease: [0.25, 0.4, 0.25, 1] }}
       className={noticeClasses.root}
     >
-      <div className={noticeClasses.surface}>
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.35, ease: [0.25, 0.4, 0.25, 1] }}
+        className={noticeClasses.surface}
+      >
         <div className={noticeClasses.inner}>
           <span className={noticeClasses.badge}>
             <span className={noticeClasses.dot} />
@@ -153,7 +155,7 @@ export default function RegionAvailabilityNotice({
             {t("regionNotice.message")}
           </p>
         </div>
-      </div>
-    </motion.aside>
+      </motion.div>
+    </aside>
   );
 }
