@@ -24,6 +24,8 @@ NODE_ENV=production
 PORT=3000
 WALNUT_WEBSITE_PUBLIC_URL=https://www.walnut.xxx
 NEXT_PUBLIC_WALNUT_WEBSITE_PUBLIC_URL=https://www.walnut.xxx
+AUTH_URL=https://www.walnut.xxx
+NEXTAUTH_URL=https://www.walnut.xxx
 WALNUT_BILLING_INTERNAL_BASE_URL=https://billing.walnut.xxx
 WALNUT_BILLING_INTERNAL_TOKEN=...
 GOOGLE_OAUTH_CLIENT_ID=...
@@ -43,6 +45,10 @@ Notes:
 - `WALNUT_WEBSITE_PUBLIC_URL` drives server-side absolute URLs for canonical,
   sitemap, robots, billing redirects, and structured data. Keep it identical to
   the canonical production host.
+- `AUTH_URL` / `NEXTAUTH_URL` must use the same public origin so Auth.js
+  generates `https://www.walnut.xxx/api/auth/callback/google`, not the internal
+  `localhost:3000` container address. The app also derives these from
+  `WALNUT_WEBSITE_PUBLIC_URL` in production as a guardrail.
 - `NEXT_PUBLIC_WALNUT_DEMO_VIDEO_URL` is optional. Leave it empty until a real
   demo video is deployed; the landing page will render a static product mockup
   instead of referencing a missing `/demo.mp4`.

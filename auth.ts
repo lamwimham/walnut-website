@@ -3,7 +3,10 @@ import type { JWT } from "next-auth/jwt";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { externalLoginWithGoogle, type AccountSummary, type GoogleIdentityPrincipal } from "@/lib/account/billing-client";
+import { installAuthPublicUrlEnv } from "@/lib/account/auth-public-url";
 import { verifyGoogleOneTapCredential } from "@/lib/account/google-one-tap";
+
+installAuthPublicUrlEnv();
 
 type AccountSessionUser = {
   id: string;

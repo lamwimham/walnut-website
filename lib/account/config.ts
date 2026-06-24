@@ -1,3 +1,5 @@
+import { firstNormalizedEnvOrigin, normalizedEnvOrigin } from "@/lib/env/origin";
+
 export type AccountRuntimeConfig = {
   websitePublicUrl: string;
   billingInternalBaseUrl: string;
@@ -13,17 +15,6 @@ export type AccountRuntimeConfig = {
 
 const DEFAULT_RETURN_URLS = ["walnut://access/oauth/google/success"];
 
-function normalizedEnvUrl(value: string | undefined): string {
-  const raw = value?.trim();
-  if (!raw) return "";
-  try {
-    const parsed = new URL(raw);
-    return `${parsed.protocol}//${parsed.host}`;
-  } catch {
-    return "";
-  }
-}
-
 function splitCsv(value: string | undefined): string[] {
   return value
     ?.split(",")
@@ -38,16 +29,19 @@ function splitAllowlist(value: string | undefined): string[] {
 
 function googleOneTapOrigins(value: string | undefined, websitePublicUrl: string): string[] {
   const explicitOrigins = splitCsv(value)
-    .map(normalizedEnvUrl)
+    .map(normalizedEnvOrigin)
     .filter(Boolean);
   return explicitOrigins.length ? explicitOrigins : [websitePublicUrl].filter(Boolean);
 }
 
 export function accountRuntimeConfig(): AccountRuntimeConfig {
-  const websitePublicUrl = normalizedEnvUrl(process.env.WALNUT_WEBSITE_PUBLIC_URL);
+  const websitePublicUrl = firstNormalizedEnvOrigin([
+    process.env.WALNUT_WEBSITE_PUBLIC_URL,
+    process.env.NEXT_PUBLIC_WALNUT_WEBSITE_PUBLIC_URL,
+  ]);
   return {
     websitePublicUrl,
-    billingInternalBaseUrl: normalizedEnvUrl(process.env.WALNUT_BILLING_INTERNAL_BASE_URL),
+    billingInternalBaseUrl: normalizedEnvOrigin(process.env.WALNUT_BILLING_INTERNAL_BASE_URL),
     hasBillingInternalToken: Boolean(process.env.WALNUT_BILLING_INTERNAL_TOKEN?.trim()),
     hasGoogleOAuthClient: Boolean(process.env.GOOGLE_OAUTH_CLIENT_ID?.trim()),
     hasGoogleOAuthSecret: Boolean(process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim()),

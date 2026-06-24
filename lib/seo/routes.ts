@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { firstNormalizedEnvOrigin } from "@/lib/env/origin";
 
 const DEFAULT_SITE_ORIGIN = "https://walnut.evofarm.top";
 
@@ -19,12 +20,11 @@ export interface SeoRoute {
 }
 
 function normalizedSiteOrigin(): string {
-  const configuredOrigin =
-    process.env.WALNUT_WEBSITE_PUBLIC_URL ??
-    process.env.NEXT_PUBLIC_WALNUT_WEBSITE_PUBLIC_URL ??
-    DEFAULT_SITE_ORIGIN;
-
-  return configuredOrigin.trim().replace(/\/+$/, "") || DEFAULT_SITE_ORIGIN;
+  return firstNormalizedEnvOrigin([
+    process.env.WALNUT_WEBSITE_PUBLIC_URL,
+    process.env.NEXT_PUBLIC_WALNUT_WEBSITE_PUBLIC_URL,
+    DEFAULT_SITE_ORIGIN,
+  ]);
 }
 
 export const siteConfig = {
